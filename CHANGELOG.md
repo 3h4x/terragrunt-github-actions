@@ -1,4 +1,13 @@
-# 0.1.0 (2023-02-27)
+## [0.1.1](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.0...v0.1.1) (2023-02-27)
+
+
+### Bug Fixes
+
+* run as user ([28adf5b](https://github.com/3h4x/terragrunt-github-actions/commit/28adf5b98fb22335b01db91cf5f1a8b47f6d292b))
+
+
+
+# [0.1.0](https://github.com/3h4x/terragrunt-github-actions/compare/860f9ce1cff5293543679b372298afd15274dbd6...v0.1.0) (2023-02-27)
 
 
 ### Bug Fixes
