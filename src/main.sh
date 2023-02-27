@@ -107,7 +107,7 @@ function installTerraform {
   echo "Successfully downloaded Terraform v${tfVersion}"
 
   echo "Unzipping Terraform v${tfVersion}"
-  unzip -d ~/bin /tmp/terraform_${tfVersion} &> /dev/null
+  unzip -o -d /tmp/bin /tmp/terraform_${tfVersion} &> /dev/null
   if [ "${?}" -ne 0 ]; then
     echo "Failed to unzip Terraform v${tfVersion}"
     exit 1
@@ -131,15 +131,10 @@ function installTerragrunt {
 
   echo "Downloading Terragrunt ${tgVersion}"
   curl -s -S -L -o /tmp/terragrunt ${url}
-  if [ "${?}" -ne 0 ]; then
-    echo "Failed to download Terragrunt ${tgVersion}"
-    exit 1
-  fi
-  echo "Successfully downloaded Terragrunt ${tgVersion}"
 
   echo "Moving Terragrunt ${tgVersion} to PATH"
   chmod +x /tmp/terragrunt
-  mv ~/bin/terragrunt /usr/local/bin/terragrunt
+  mv /tmp/terragrunt /tmp/bin/terragrunt
   if [ "${?}" -ne 0 ]; then
     echo "Failed to move Terragrunt ${tgVersion}"
     exit 1
@@ -148,6 +143,7 @@ function installTerragrunt {
 }
 
 function main {
+  export PATH="/tmp/bin:${PATH}"
   # Source the other files to gain access to their functions
   scriptDir=$(dirname ${0})
   source ${scriptDir}/terragrunt_fmt.sh
@@ -162,9 +158,8 @@ function main {
 
   parseInputs
   configureCLICredentials
-  mkdir -p ~/bin
+  mkdir -p /tmp/bin
   installTerraform
-  PATH="${HOME}/bin:${PATH}"
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
 
   case "${tfSubcommand}" in
