@@ -99,7 +99,7 @@
 
 ### Added
 
-* Added new YAML syntax for GitHub Actions. 
+* Added new YAML syntax for GitHub Actions.
 
 ### Changed
 

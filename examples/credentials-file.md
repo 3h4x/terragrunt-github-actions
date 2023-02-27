@@ -23,7 +23,7 @@ jobs:
           tf_actions_subcommand: 'init'
           tf_actions_working_dir: '.'
           tf_actions_comment: true
-          tf_actions_cli_credentials_hostname: app.terraform.io 
+          tf_actions_cli_credentials_hostname: app.terraform.io
           tf_actions_cli_credentials_token: ${{ secrets.TF_API_TOKEN }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

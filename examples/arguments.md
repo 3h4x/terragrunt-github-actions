@@ -1,4 +1,4 @@
-# Arguments 
+# Arguments
 
 Arguments can be passed to each subcommand in two ways.
 
