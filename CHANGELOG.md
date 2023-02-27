@@ -1,3 +1,12 @@
+## [0.1.2](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.1...v0.1.2) (2023-02-27)
+
+
+### Bug Fixes
+
+* bash main.sh with user permission ([d9a5cb0](https://github.com/3h4x/terragrunt-github-actions/commit/d9a5cb09b035909f7ef041aafe60659e4dd59263))
+
+
+
 ## [0.1.1](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.0...v0.1.1) (2023-02-27)
 
 
