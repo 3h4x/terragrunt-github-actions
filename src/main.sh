@@ -107,7 +107,7 @@ function installTerraform {
   echo "Successfully downloaded Terraform v${tfVersion}"
 
   echo "Unzipping Terraform v${tfVersion}"
-  unzip -d /usr/local/bin /tmp/terraform_${tfVersion} &> /dev/null
+  unzip -d ~/bin /tmp/terraform_${tfVersion} &> /dev/null
   if [ "${?}" -ne 0 ]; then
     echo "Failed to unzip Terraform v${tfVersion}"
     exit 1
@@ -139,7 +139,7 @@ function installTerragrunt {
 
   echo "Moving Terragrunt ${tgVersion} to PATH"
   chmod +x /tmp/terragrunt
-  mv /tmp/terragrunt /usr/local/bin/terragrunt
+  mv ~/bin/terragrunt /usr/local/bin/terragrunt
   if [ "${?}" -ne 0 ]; then
     echo "Failed to move Terragrunt ${tgVersion}"
     exit 1
@@ -162,7 +162,9 @@ function main {
 
   parseInputs
   configureCLICredentials
+  mkdir -p ~/bin
   installTerraform
+  PATH="${HOME}/bin:${PATH}"
   cd ${GITHUB_WORKSPACE}/${tfWorkingDir}
 
   case "${tfSubcommand}" in
