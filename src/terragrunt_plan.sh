@@ -35,9 +35,6 @@ function terragruntPlan {
     echo "plan: info: successfully planned Terragrunt configuration in ${tfWorkingDir}"
     echo
 
-    # If output is longer than max length (65536 characters), keep last part
-    # planOutput=$(echo "${planOutput}" | tail -c 65000 )
-
     if [[ "${planJsonOutputEnabled}" == "true" ]]; then
       # Generate plan in JSON
       plans=($(find . -name tfplan.binary))
@@ -92,19 +89,32 @@ ${planJsonOutput}
 
   echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
 
+  # We always want to show plan
+  cat plan
+
   # https://github.com/orgs/community/discussions/26288
   planOutput=$(cat plan)
   planOutput="${planOutput//'%'/'%25'}"
   planOutput="${planOutput//$'\n'/'%0A'}"
   planOutput="${planOutput//$'\r'/'%0D'}"
 
-  # Trimmed plan output
-  echo "::set-output name=tf_actions_plan_output::${planOutput}"
-
   # Readable output for GH comment
-  changes=$(echo ${planOutput} | grep -E '(Terraform will perform the following actions|Plan:)' -A2  | grep -v "Terraform will perform the following actions" | grep -v '\-\-' | sed -e 's/#//' -e 's/^[ ]*//')
-  planConciseOutput="### Plan for ${tfWorkingDir}\n${changes}"
+  planConciseOutput=$(cat << EOF
+### Plan for ${tfWorkingDir}
+
+`cat plan | grep -E '(will be|Plan:)' | grep -v '\-\-' | sed -e 's/#//' -e 's/^[ ]*//'`
+EOF
+  )
+  planConciseOutput="${planConciseOutput//'%'/'%25'}"
+  planConciseOutput="${planConciseOutput//$'\n'/'%0A'}"
+  planConciseOutput="${planConciseOutput//$'\r'/'%0D'}"
+
+
   echo "::set-output name=tf_actions_plan_concise_output::${planConciseOutput}"
+
+  # If output is longer than max length (65536 characters), keep last part
+  planOutput=$(echo "${planOutput}" | tail -c 65000 )
+  echo "::set-output name=tf_actions_plan_output::${planOutput}"
 
   exit ${planExitCode}
 }
