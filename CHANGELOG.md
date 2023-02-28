@@ -1,3 +1,12 @@
+## [0.2.1](https://github.com/3h4x/terragrunt-github-actions/compare/v0.2.0...v0.2.1) (2023-02-28)
+
+
+### Bug Fixes
+
+* always print plan ([#2](https://github.com/3h4x/terragrunt-github-actions/issues/2)) ([fdcf6ef](https://github.com/3h4x/terragrunt-github-actions/commit/fdcf6efd1579be5b60c4435f4ea64f83efd2e339))
+
+
+
 # [0.2.0](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.2...v0.2.0) (2023-02-28)
 
 
