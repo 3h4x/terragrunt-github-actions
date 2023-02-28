@@ -3,27 +3,25 @@
 function terragruntPlan {
   # Gather the output of `terragrunt plan`.
   echo "plan: info: planning Terragrunt configuration in ${tfWorkingDir}"
-  planOutput=$(${tfBinary} plan -detailed-exitcode -input=false -out=tfplan.binary ${*} 2>&1)
+  ${tfBinary} plan -detailed-exitcode -input=false -compact-warnings -no-color -out=tfplan.binary ${*} 2>/dev/null > plan_output
+  planExitCode=${?}
 
   # Get only changes from plan
-  csplit -n2 plan '/Terraform will perform the following actions:/' "{*}"                                                                                                                      ─╯
+  echo "### Plan for ${tfWorkingDir}}" > plan
+  echo >> plan
+  csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}"
+  ls -lah
   rm xx00 # First split doesn't contain anything useful
   for i in xx*; do
-    grep $i 'Plan: ' -B1000 >> plan
+    grep -B1000 'Plan: ' $i >> plan
   done
 
-  echo PLAN
-  cat plan
-  echo END
-
-  planExitCode=${?}
   planHasChanges=false
   planCommentStatus="Failed"
 
   # Exit code of 0 indicates success with no changes. Print the output and exit.
   if [ ${planExitCode} -eq 0 ]; then
     echo "plan: info: successfully planned Terragrunt configuration in ${tfWorkingDir}"
-    echo "${planOutput}"
     echo
     echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
     exit ${planExitCode}
@@ -36,15 +34,10 @@ function terragruntPlan {
     planHasChanges=true
     planCommentStatus="Success"
     echo "plan: info: successfully planned Terragrunt configuration in ${tfWorkingDir}"
-    echo "${planOutput}"
     echo
-    if echo "${planOutput}" | egrep '^-{72}$' &> /dev/null; then
-        planOutput=$(echo "${planOutput}" | sed -n -r '/-{72}/,/-{72}/{ /-{72}/d; p }')
-    fi
-    planOutput=$(echo "${planOutput}" | sed -r -e 's/^  \+/\+/g' | sed -r -e 's/^  ~/~/g' | sed -r -e 's/^  -/-/g')
 
-     # If output is longer than max length (65536 characters), keep last part
-    planOutput=$(echo "${planOutput}" | tail -c 65000 )
+    # If output is longer than max length (65536 characters), keep last part
+    # planOutput=$(echo "${planOutput}" | tail -c 65000 )
 
     if [[ "${planJsonOutputEnabled}" == "true" ]]; then
       # Generate plan in JSON
@@ -74,7 +67,6 @@ function terragruntPlan {
   # Exit code of !0 indicates failure.
   if [ ${planExitCode} -ne 0 ]; then
     echo "plan: error: failed to plan Terragrunt configuration in ${tfWorkingDir}"
-    echo "${planOutput}"
     echo
   fi
 
@@ -101,7 +93,8 @@ ${planJsonOutput}
 
   echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
 
-  # https://github.community/t5/GitHub-Actions/set-output-Truncates-Multiline-Strings/m-p/38372/highlight/true#M3322
+  # https://github.com/orgs/community/discussions/26288
+  planOutput=$(cat plan)
   planOutput="${planOutput//'%'/'%25'}"
   planOutput="${planOutput//$'\n'/'%0A'}"
   planOutput="${planOutput//$'\r'/'%0D'}"

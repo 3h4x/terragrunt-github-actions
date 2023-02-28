@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 function stripColors {
   echo "${1}" | sed 's/\x1b\[[0-9;]*m//g'
