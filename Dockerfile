@@ -1,6 +1,6 @@
 FROM alpine:3
 
-RUN ["/bin/sh", "-c", "apk add --update --no-cache bash ca-certificates curl git jq"]
+RUN apk add --update --no-cache bash ca-certificates curl git jq coreutils
 
 COPY ["src", "/src/"]
 RUN adduser runner -g runner -D
