@@ -7,10 +7,9 @@ function terragruntPlan {
   planExitCode=${?}
 
   # Get only changes from plan
-  echo "### Plan for ${tfWorkingDir}}" > plan
+  echo "### Plan for ${tfWorkingDir}" > plan
   echo >> plan
-  csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}"
-  ls -lah
+  csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}" > /dev/null
   rm xx00 # First split doesn't contain anything useful
   for i in xx*; do
     grep -B1000 'Plan: ' $i >> plan
@@ -99,6 +98,12 @@ ${planJsonOutput}
   planOutput="${planOutput//$'\n'/'%0A'}"
   planOutput="${planOutput//$'\r'/'%0D'}"
 
+  # Trimmed plan output
   echo "::set-output name=tf_actions_plan_output::${planOutput}"
+
+  # Readable output for GH comment
+  planConciseOutput=$(echo ${planOutput} | grep -A1 "Terraform will perform the following actions:")
+  echo "::set-output name=tf_actions_plan_concise_output::${planConciseOutput}"
+
   exit ${planExitCode}
 }
