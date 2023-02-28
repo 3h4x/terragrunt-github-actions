@@ -102,7 +102,8 @@ ${planJsonOutput}
   echo "::set-output name=tf_actions_plan_output::${planOutput}"
 
   # Readable output for GH comment
-  planConciseOutput=$(echo ${planOutput} | grep -A1 "Terraform will perform the following actions:")
+  changes=$(echo ${planOutput} | grep -E '(Terraform will perform the following actions|Plan:)' -A2  | grep -v "Terraform will perform the following actions" | grep -v '\-\-' | sed -e 's/#//' -e 's/^[ ]*//')
+  planConciseOutput="### Plan for ${tfWorkingDir}\n${changes}"
   echo "::set-output name=tf_actions_plan_concise_output::${planConciseOutput}"
 
   exit ${planExitCode}
