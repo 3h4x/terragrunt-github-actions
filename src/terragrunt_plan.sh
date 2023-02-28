@@ -6,11 +6,14 @@ function terragruntPlan {
   ${tfBinary} plan -detailed-exitcode -input=false -compact-warnings -no-color -out=tfplan.binary ${*} 2>/dev/null > plan_output
   planExitCode=${?}
 
+  # We always want to show plan
+  cat plan_output
+
   # Get only changes from plan
   echo "### Plan for ${tfWorkingDir}" > plan
   echo >> plan
   csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}" > /dev/null
-  rm xx00 # First split doesn't contain anything useful
+  rm xx00 > /dev/null # First split doesn't contain anything useful
   for i in xx*; do
     grep -B1000 'Plan: ' $i >> plan
   done
@@ -55,6 +58,17 @@ function terragruntPlan {
       find . -name tfplan.json
       planJsonOutput=$(find . -name tfplan.json -exec jq -c '.resource_changes[]' {} \; | jq -s 'map({(.address): select(.change.actions[] | contains("no-op") | not )}) | add')
       echo ${planJsonOutput} > tfplan.json
+
+      # TODO: compare changes
+      CHANGES=$(terraform show -json $TMPDIR/tfplan | jq '.resource_changes[].change')
+
+      # Diff before and after with newlines expanded
+      diff -u \
+        <(echo "$CHANGES" | jq '.before' | sed 's/\\n/\
+      /g') \
+      <(echo "$CHANGES" | jq '.after' | sed 's/\\n/\
+      /g')
+
     fi
 
     echo "::set-output name=tf_actions_plan_json_output::${planJsonOutput}"
@@ -88,9 +102,6 @@ ${planJsonOutput}
   fi
 
   echo ::set-output name=tf_actions_plan_has_changes::${planHasChanges}
-
-  # We always want to show plan
-  cat plan
 
   # https://github.com/orgs/community/discussions/26288
   planOutput=$(cat plan)
