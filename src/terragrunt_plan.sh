@@ -13,7 +13,7 @@ function terragruntPlan {
   echo "### Plan for ${tfWorkingDir}" > plan
   echo >> plan
   csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}" > /dev/null
-  rm xx00 # First split doesn't contain anything useful
+  rm xx00 > /dev/null # First split doesn't contain anything useful
   for i in xx*; do
     grep -B1000 'Plan: ' $i >> plan
   done
