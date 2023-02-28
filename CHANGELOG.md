@@ -1,3 +1,21 @@
+# [0.2.0](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.2...v0.2.0) (2023-02-28)
+
+
+### Bug Fixes
+
+* add coreutils ([d72e729](https://github.com/3h4x/terragrunt-github-actions/commit/d72e7290f6353c23e740966ac42c7da87fd638d0))
+* better plan ([010d21c](https://github.com/3h4x/terragrunt-github-actions/commit/010d21c6318202763d2241186e1d935cd6b19801))
+* plan can be max maximum is 65536 characters ([9504836](https://github.com/3h4x/terragrunt-github-actions/commit/950483696b40614806ac7425518096289f7ececb))
+
+
+### Features
+
+* add json plan ([18c452c](https://github.com/3h4x/terragrunt-github-actions/commit/18c452c809d737e848213a3d907c745d0ce3db7f))
+* added concise plan output ([699e900](https://github.com/3h4x/terragrunt-github-actions/commit/699e9009584d4c89aa2ec3e9162b51ca335a6860))
+* split plan ([3e3a3fd](https://github.com/3h4x/terragrunt-github-actions/commit/3e3a3fd15086f7d32bf8117f07753e06ae9ef0c9))
+
+
+
 ## [0.1.2](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.1...v0.1.2) (2023-02-27)
 
 
