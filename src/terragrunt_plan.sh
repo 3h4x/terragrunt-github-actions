@@ -4,6 +4,18 @@ function terragruntPlan {
   # Gather the output of `terragrunt plan`.
   echo "plan: info: planning Terragrunt configuration in ${tfWorkingDir}"
   planOutput=$(${tfBinary} plan -detailed-exitcode -input=false -out=tfplan.binary ${*} 2>&1)
+
+  # Get only changes from plan
+  csplit -n2 plan '/Terraform will perform the following actions:/' "{*}"                                                                                                                      ─╯
+  rm xx00 # First split doesn't contain anything useful
+  for i in xx*; do
+    grep $i 'Plan: ' -B1000 >> plan
+  done
+
+  echo PLAN
+  cat plan
+  echo END
+
   planExitCode=${?}
   planHasChanges=false
   planCommentStatus="Failed"
@@ -34,26 +46,28 @@ function terragruntPlan {
      # If output is longer than max length (65536 characters), keep last part
     planOutput=$(echo "${planOutput}" | tail -c 65000 )
 
-    pwd
-    # Generate plan in JSON
-    plans=($(find . -name tfplan.binary))
+    if [[ "${planJsonOutputEnabled}" == "true" ]]; then
+      # Generate plan in JSON
+      plans=($(find . -name tfplan.binary))
 
-    planjsons=()
-    for plan in "${plans[@]}"; do
-      # Find the Terraform working directory for running terragrunt show
-      # We want to take the dir of the plan file and strip off anything after the .terraform-cache dir
-      # to find the location of the Terraform working directory that contains the Terraform code
-      dir=$(dirname $plan)
-      dir=$(echo "$dir" | sed 's/\(.*\)\/\.terragrunt-cache\/.*/\1/')
+      planjsons=()
+      for plan in "${plans[@]}"; do
+        # Find the Terraform working directory for running terragrunt show
+        # We want to take the dir of the plan file and strip off anything after the .terraform-cache dir
+        # to find the location of the Terraform working directory that contains the Terraform code
+        dir=$(dirname $plan)
+        dir=$(echo "$dir" | sed 's/\(.*\)\/\.terragrunt-cache\/.*/\1/')
 
-      # Customize this to how you run Terragrunt
-      echo "Running terragrunt show for $(basename $plan) for $dir"
-      terragrunt show -json $(basename $plan) --terragrunt-working-dir=$dir > tfplan.json
-    done
+        # Customize this to how you run Terragrunt
+        echo "Running terragrunt show for $(basename $plan) for $dir"
+        terragrunt show -json $(basename $plan) --terragrunt-working-dir=$dir > tfplan.json
+      done
 
-    find . -name tfplan.json
-    planJsonOutput=$(find . -name tfplan.json -exec jq -c '.resource_changes[]' {} \; | jq -s 'map({(.address): select(.change.actions[] | contains("no-op") | not )}) | add')
-    echo ${planJsonOutput} > tfplan.json
+      find . -name tfplan.json
+      planJsonOutput=$(find . -name tfplan.json -exec jq -c '.resource_changes[]' {} \; | jq -s 'map({(.address): select(.change.actions[] | contains("no-op") | not )}) | add')
+      echo ${planJsonOutput} > tfplan.json
+    fi
+
     echo "::set-output name=tf_actions_plan_json_output::${planJsonOutput}"
   fi
 
