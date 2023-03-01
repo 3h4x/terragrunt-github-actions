@@ -3,15 +3,14 @@
 function terragruntPlan {
   # Gather the output of `terragrunt plan`.
   echo "plan: info: planning Terragrunt configuration in ${tfWorkingDir}"
-  ${tfBinary} plan -detailed-exitcode -input=false -compact-warnings -no-color -out=tfplan.binary ${*} 2>/dev/null > plan_output
+  plan=$(${tfBinary} plan -detailed-exitcode -input=false -compact-warnings -no-color -out=tfplan.binary ${*} 2>&1)
   planExitCode=${?}
 
   # We always want to show plan
-  cat plan_output
+  echo "${plan}"
+  echo "${plan}" > plan_output
 
   # Get only changes from plan
-  echo "### Plan for ${tfWorkingDir}" > plan
-  echo >> plan
   csplit -n2 plan_output '/Terraform will perform the following actions:/' "{*}" > /dev/null
   rm xx00 > /dev/null # First split doesn't contain anything useful
   for i in xx*; do
@@ -111,9 +110,7 @@ ${planJsonOutput}
 
   # Readable output for GH comment
   planConciseOutput=$(cat << EOF
-### Plan for ${tfWorkingDir}
-
-`cat plan | grep -E '(will be|Plan:)' | grep -v '\-\-' | sed -e 's/#//' -e 's/^[ ]*//'`
+`cat plan | grep -E '(must be|will be|Plan:)' | grep -v '\-\-' | sed -e 's/#//' -e 's/^[ ]*//'`
 EOF
   )
   planConciseOutput="${planConciseOutput//'%'/'%25'}"
