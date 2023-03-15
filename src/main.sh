@@ -36,6 +36,10 @@ function parseInputs {
 
   # Optional inputs
   tfWorkingDir="."
+  if [[ -n "${INPUT_SSH_KEY}" ]]; then
+    setupSSH
+  fi
+
   if [[ -n "${INPUT_TF_ACTIONS_WORKING_DIR}" ]]; then
     tfWorkingDir=${INPUT_TF_ACTIONS_WORKING_DIR}
   fi
@@ -137,6 +141,15 @@ function installTerragrunt {
   fi
   echo "Successfully moved Terragrunt ${tgVersion}"
 }
+function setupSSH {
+  mkdir -p /home/runner/.ssh
+  chmod 700 /home/runner/.ssh
+  echo "${INPUT_SSH_KEY}" > /home/runner/.ssh/id_rsa
+  chmod 600 /home/runner/.ssh/id_rsa
+  ssh-keyscan github.com >> /home/runner/.ssh/known_hosts
+  chmod 644 /home/runner/.ssh/known_hosts
+  echo `ssh -T git@github.com`
+}
 
 function main {
   export PATH="/tmp/bin:${PATH}"
@@ -151,6 +164,7 @@ function main {
   source ${scriptDir}/terragrunt_import.sh
   source ${scriptDir}/terragrunt_taint.sh
   source ${scriptDir}/terragrunt_destroy.sh
+
 
   parseInputs
   configureCLICredentials
