@@ -5,6 +5,9 @@ branding:
   icon: 'cloud'
   color: 'purple'
 inputs:
+  ssh_key:
+    description: 'Key to be used for SSH authentication with private repos.'
+    required: false
   tf_actions_subcommand:
     description: 'Terraform or Terragrunt subcommand to execute.'
     required: true
