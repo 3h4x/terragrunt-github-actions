@@ -1,3 +1,12 @@
+# [0.3.0](https://github.com/3h4x/terragrunt-github-actions/compare/v0.2.2...v0.3.0) (2023-03-15)
+
+
+### Features
+
+* added support for ssh key ([#4](https://github.com/3h4x/terragrunt-github-actions/issues/4)) ([ccea815](https://github.com/3h4x/terragrunt-github-actions/commit/ccea81594738552dc06674cf5a51f29f5afa5565))
+
+
+
 ## [0.2.2](https://github.com/3h4x/terragrunt-github-actions/compare/v0.2.1...v0.2.2) (2023-03-01)
 
 
@@ -40,15 +49,6 @@
 ### Bug Fixes
 
 * bash main.sh with user permission ([d9a5cb0](https://github.com/3h4x/terragrunt-github-actions/commit/d9a5cb09b035909f7ef041aafe60659e4dd59263))
-
-
-
-## [0.1.1](https://github.com/3h4x/terragrunt-github-actions/compare/v0.1.0...v0.1.1) (2023-02-27)
-
-
-### Bug Fixes
-
-* run as user ([28adf5b](https://github.com/3h4x/terragrunt-github-actions/commit/28adf5b98fb22335b01db91cf5f1a8b47f6d292b))
 
 
 
